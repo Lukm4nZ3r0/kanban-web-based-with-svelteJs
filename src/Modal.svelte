@@ -28,9 +28,6 @@
 		background-color:#F9F9FA;
 		color: #6c757d;
 	}
-	.card-bottom{
-		padding:15px;
-	}
 	.content-wrapper{
 		padding:15px
 	}
@@ -48,20 +45,6 @@
         text-shadow: 0 1px 0 #fff;
         opacity: .5;
         margin-bottom: .25rem;
-    }
-    .back-button{
-        float: right;
-        border-radius: .25rem;
-        background-color:#28a745;
-        color:white;
-        cursor: pointer;
-        transition:1s;
-        padding:.5rem;
-        border:none;
-    }
-    .back-button:hover{
-        background-color:#1f8236;
-        transition:1s;
     }
 </style>
 
