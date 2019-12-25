@@ -66,6 +66,7 @@
     export let deleteListData
     export let getListDetails
     export let setCheckedChecklist
+    export let addChecklistDatas
 
     const progress = tweened(0, {
 		duration: 400,
@@ -73,6 +74,7 @@
     });
 
     let inputValue = ''
+    let inputCheckboxValue = ''
     let visible = false
     let selectedCard = null
     let listIndex = null
@@ -81,6 +83,25 @@
 
     const inputHandler = (e) =>{
         inputValue = e.target.value
+    }
+
+    const inputCheckboxHandler = (e) =>{
+        inputCheckboxValue = e.target.value
+    }
+
+    const submitListCheckboxHandler = (index,listIndex) =>{
+        if(inputCheckboxValue.length > 0){
+            let newDate = new Date()
+            let newData = {
+                key:newDate.getTime(),
+                done:false,
+                content:inputCheckboxValue
+            }
+            addChecklistDatas(index,listIndex,newData)
+            selectedCard = data.lists[listIndex]
+            percentagesCounting(selectedCard)
+            inputCheckboxValue = ''
+        }
     }
 
     const deleteListHandler = () =>{
@@ -105,6 +126,8 @@
     const modalOpenHandler = (list,i) =>{
         visible=true
         selectedCard=list
+        console.log(selectedCard)
+        console.log(data)
         listIndex=i
         console.log(list)
         percentagesCounting(list)
@@ -140,6 +163,7 @@
         console.log(listIndex)
         console.log(i)
         console.log(data.lists)
+        selectedCard = data.lists[listIndex]
         percentagesCounting(data.lists[listIndex])
     }
 </script>
@@ -190,5 +214,7 @@
                 {/each}
             </div>
         {/if}
+        <input type="text" placeholder="Add New Checklist" on:change={inputCheckboxHandler} bind:value={inputCheckboxValue} />
+        <button on:click={()=>submitListCheckboxHandler(index,listIndex)}>+ Add</button>
     </Modal>
 </div>

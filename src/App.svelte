@@ -5,11 +5,11 @@
 		background-attachment: fixed;
 		background-size: cover;
 		height:100%;
+		overflow: hidden;
 	}
 	.header{
 		background-color:white;
 		padding:15px;
-		/* position: absolute; */
 	}
 	.wrapper{
 		overflow: auto;
@@ -17,7 +17,7 @@
 		vertical-align: top;
 		padding: 15px;
 		height:100%;
-		scrollbar-width: none;
+		/* scrollbar-width: none; */
 	}
 	.inline{
 		display: inline-block;
@@ -56,6 +56,13 @@
 		console.log(index)
 		console.log(newListData)
 		datas[index].lists = [...datas[index].lists, newListData]
+		console.log(datas)
+	}
+
+	const addChecklistDatas = (index,listIndex,newListData) =>{
+		let newData = datas
+		newData[index].lists[listIndex].checklist = [...newData[index].lists[listIndex].checklist, newListData]
+		datas = newData
 		console.log(datas)
 	}
 
@@ -106,6 +113,7 @@
 				deleteListData={deleteListData}
 				getListDetails={getListDetails}
 				setCheckedChecklist={setCheckedChecklist}
+				addChecklistDatas={addChecklistDatas}
 			/>
 		{/each}
 		<button class="inline add-new-card">
