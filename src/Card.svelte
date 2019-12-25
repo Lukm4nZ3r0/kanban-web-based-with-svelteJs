@@ -2,7 +2,7 @@
 	.inline{
 		display: inline-block;
 		white-space: normal;
-		vertical-align: top;
+        vertical-align: top;
 	}
 	.card{
 		border-radius:.25rem;
@@ -10,15 +10,25 @@
 		width:300px;
         margin-right:1rem;
         background-color:rgba(255, 255, 255, 0.4);
+        scrollbar-width: none;
 	}
 	.card-title{
 		padding:5px;
 		background-color:#F9F9FA;
         color: #6c757d;
         cursor: pointer;
-	}
+    }
+    .card-bottom{
+		padding:5px;
+		background-color:#F9F9FA;
+        color: #6c757d;
+    }
 	.content-wrapper{
-		padding:5px
+        margin:auto;
+        overflow:auto;
+        scrollbar-width:none;
+        width:100%;
+        transition:1s;
 	}
     .content-delete-button{
         cursor: pointer;
@@ -50,7 +60,14 @@
 		display: block;
         width: 100%;
         border:none;
-	}
+    }
+    .empty-card{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        color:white;
+    }
 </style>
 
 <script>
@@ -69,7 +86,7 @@
     export let addChecklistDatas
 
     const progress = tweened(0, {
-		duration: 400,
+		duration: 700,
 		easing: cubicOut
     });
 
@@ -80,6 +97,9 @@
     let listIndex = null
     let allCheckedDataLength = 0
     let checkedData = 0
+    let contentWrapperStyle = {
+        style:`height:${window.innerHeight*70/100}px`
+    }
 
     const inputHandler = (e) =>{
         inputValue = e.target.value
@@ -90,6 +110,8 @@
     }
 
     const submitListCheckboxHandler = (index,listIndex) =>{
+        console.log('index',index)
+        console.log('listIndex',listIndex)
         if(inputCheckboxValue.length > 0){
             let newDate = new Date()
             let newData = {
@@ -142,11 +164,15 @@
             }
         })
         checkedData = tempLength
+        
+        // karena jika penyebut berupa 0, maka hasilnya akan tak hingga
+        if(allCheckedDataLength === 0){
+            progress.set(0)
+        }
+        else{
+            progress.set(checkedData/allCheckedDataLength)
+        }
 
-        console.log(allCheckedDataLength)
-        console.log(checkedData)
-
-        progress.set(checkedData/allCheckedDataLength)
     }
 
     const modalCloseHandler = () =>{
@@ -173,17 +199,17 @@
         <span class="card-list-title">{data.title}</span>
         <button class="content-delete-button" on:click={deleteListHandler}>&times;</button>
     </div>
-    <div class="content-wrapper">
+    <div class="content-wrapper" style={data.lists.length > 5 && `height:${window.innerHeight*70/100}px;`}>
     {#if data.lists.length > 0}
         {#each data.lists as list,i}
             <CardList list={list} deleteListData={deleteListData} cardIndex={index} index={i} modalOpenHandler={()=>modalOpenHandler(list,i)} />
         {/each}
     {:else}
-        <span>Card is empty.</span>
+        <span class="empty-card">Card is empty.</span>
     {/if}
     </div>
-    <div class="card-title">
-        <input type="text" placeholder="Add new List .." on:change={inputHandler} bind:value={inputValue}/>
+    <div class="card-bottom">
+        <input type="text" placeholder="Add Card .." on:change={inputHandler} bind:value={inputValue}/>
         <button class="add-button" on:click={submitListHandler}>+ Add</button>
     </div>
     <Modal
@@ -199,8 +225,9 @@
         {/if}
         
         {#if selectedCard.checklist.length > 0}
-            <div>Checklist:</div>
+            <div>Checklist Progress:</div>
             <progress value={$progress}></progress>
+            <div>Percentages: {(checkedData/allCheckedDataLength)*100} %</div>
             <div>
                 {#each selectedCard.checklist as list,i}
                 <div>

@@ -38,6 +38,21 @@
 		padding:10px;
 		border:none;
 		cursor: pointer;
+		transition:0.3s;
+	}
+	.add-new-card:hover{
+		background-color:rgba(221, 221, 221, 0.7);
+		transition:0.3s;
+	}
+	.add-new-list-button{
+		width:100%;
+		background-color:#23ad2a;
+		color:white;
+		cursor: pointer;
+		border:none;
+	}
+	.add-new-list-button:hover{
+		background-color:#17731c;
 	}
 </style>
 
@@ -49,8 +64,27 @@
 
 	let datas = DummyData
 	let listSelected = null
+	let inputNewList=''
 
 	let visible = false
+	let addListModalVisible = false
+
+	const inputNewListHandler = (e) =>{
+		inputNewList = e.target.value
+	}
+
+	const addNewListHandler = () =>{
+		let newDate = new Date()
+		let newData = {
+			key:newDate.getTime(),
+			labels:[],
+			title:inputNewList,
+			lists:[]
+		}
+		datas = [...datas, newData]
+		inputNewList = ''
+		addListModalVisible = false
+	}
 
 	const addListDatas = (index, newListData) =>{
 		console.log(index)
@@ -99,6 +133,12 @@
 		newData[cardIndex].lists[listIndex].checklist[checkboxIndex].done = value
 		datas = newData
 	}
+	const openAddNewListModal = () =>{
+		addListModalVisible = true
+	}
+	const closeAddNewListModal = () =>{
+		addListModalVisible = false
+	}
 </script>
 
 <div class="container">
@@ -116,7 +156,7 @@
 				addChecklistDatas={addChecklistDatas}
 			/>
 		{/each}
-		<button class="inline add-new-card">
+		<button class="inline add-new-card" on:click={openAddNewListModal}>
 			+ Add New List
 		</button>
 	</div>
@@ -134,5 +174,14 @@
 				{/each}
 			</div>
 		{/if}
+	</Modal>
+	<Modal
+		visible={addListModalVisible}
+		closeHandler={closeAddNewListModal}
+		title="Add New List"
+	>
+		<div>List Title:</div>
+		<input type="text" placeholder="Title" style="width:100%" bind:value={inputNewList} on:change={inputNewListHandler} />
+		<button class="add-new-list-button" on:click={addNewListHandler}>+ Add</button>
 	</Modal>
 </div>

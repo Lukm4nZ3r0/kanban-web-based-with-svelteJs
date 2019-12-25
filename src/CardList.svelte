@@ -30,8 +30,7 @@
         box-shadow: 0 .25rem .75rem rgba(0,0,0,.1);
         border-radius: .25rem;
         transition: opacity .15s linear;
-        margin-bottom:10px;
-        cursor: pointer;
+        margin:10px;
     }
     .card-list-header{
         display: flex;
@@ -41,6 +40,7 @@
         background-color: rgba(255,255,255,.85);
         background-clip: padding-box;
         border-bottom: 1px solid rgba(0,0,0,.05);
+        cursor:move;
     }
     .card-list-title{
         flex: 1
@@ -64,16 +64,17 @@
         color:red
     }
 	.card-list-body{
-		padding:.75rem
+		padding:.75rem;
+        cursor: pointer;
 	}
 </style>
 
-<div class="card-list" on:click={()=>modalOpenHandler(list)}>
+<div class="card-list">
     <div class="card-list-header">
         <span class="card-list-title">Warna</span>
         <button class="content-delete-button" on:click={()=>deleteListData(cardIndex,index)}>&times;</button>
     </div>
-    <div class="card-list-body">
+    <div class="card-list-body" on:click={()=>modalOpenHandler(list)}>
         {textConverter()}
     </div>
 </div>
