@@ -12,6 +12,24 @@ let DataDummy = [
         lists:[
             {
                 key:111,
+                labels:[
+                    {
+                        label:'Front-end',
+                        color:'red'
+                    },
+                    {
+                        label:'Back-end',
+                        color:'blue'
+                    },
+                    {
+                        label:'Back-enddddddd',
+                        color:'blue'
+                    },
+                    {
+                        label:'Back-end',
+                        color:'blue'
+                    }
+                ],
                 content:'Membuat apaaaaaaaaaaaaaaaa ??????????????????',
                 description:'description',
                 checklist:[
@@ -41,6 +59,12 @@ let DataDummy = [
             },
             {
                 key:112,
+                labels:[
+                    {
+                        label:'Front-end',
+                        color:'red'
+                    }
+                ],
                 content:'Membuat apaaaaaaaaaaaaaaaa ??????????????????',
                 description:'description',
                 checklist:[
@@ -83,6 +107,12 @@ let DataDummy = [
         lists:[
             {
                 key:113,
+                labels:[
+                    {
+                        label:'Front-end',
+                        color:'red'
+                    }
+                ],
                 content:'Membuat apaaaaaaaaaaaaaaaa',
                 description:'description',
                 checklist:[
@@ -125,6 +155,12 @@ let DataDummy = [
         lists:[
             {
                 key:114,
+                labels:[
+                    {
+                        label:'Front-end',
+                        color:'red'
+                    }
+                ],
                 content:'Membuat apaaaaaaaaaaaaaaaa',
                 description:'description',
                 checklist:[
@@ -167,6 +203,12 @@ let DataDummy = [
         lists:[
             {
                 key:115,
+                labels:[
+                    {
+                        label:'Front-end',
+                        color:'red'
+                    }
+                ],
                 content:'Membuat apaaaaaaaaaaaaaaaa',
                 description:'description',
                 checklist:[

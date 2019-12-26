@@ -45,6 +45,22 @@
         opacity: .5;
         margin-bottom: .25rem;
     }
+    .label-delete-button{
+        cursor: pointer;
+        padding: 0;
+        background-color: transparent;
+        border: 0;
+        -moz-appearance: none;
+        font-weight: 700;
+        line-height: 1;
+        color: white;
+        text-shadow: 0 1px 0 #fff;
+        opacity: .5;
+    }
+    .label-delete-button:hover{
+        text-shadow: 0 1px 0 #fff;
+        box-shadow: 0 .25rem .75rem rgba(0,0,0,.2);
+    }
     .add-button{
         cursor: pointer;
     }
@@ -82,6 +98,30 @@
         float: right;
         cursor: pointer;
     }
+    .card-selected-title{
+        font-size:2rem;
+        margin:5px;
+    }
+    .percentages-box{
+        border-radius:15px; 
+        padding:10px; 
+        border:1px solid green; 
+        margin:10px
+    }
+    .labels{
+        color:white;
+        padding:5px;
+        border-radius:20px;
+        margin-right:.5rem;
+        font-size:.75em;
+        transition:0.5s;
+    }
+    .labels:hover{
+        text-shadow: 0 1px 0 #fff;
+        box-shadow: 0 .25rem .75rem rgba(0,0,0,.2);
+        transition:0.5s;
+        font-size:1em;
+    }
 </style>
 
 <script>
@@ -118,12 +158,15 @@
     let selectedCard = null
     let newCardContent = {
         content:'',
-        description:''
+        description:'',
+        labels:[]
     }
     let listIndex = null
     let allCheckedDataLength = 0
     let checkedData = 0
     let editableMode = true
+    let labelInput = ''
+    let labelColor = ''
 
     const inputHandler = (e) =>{
         inputValue = e.target.value
@@ -160,6 +203,7 @@
             let newData = {
                 key:newDate.getTime(),
                 content:inputValue,
+                labels:[],
                 description:'',
                 checklist:[],
                 comments:[]
@@ -196,7 +240,6 @@
         else{
             progress.set(checkedData/allCheckedDataLength)
         }
-
     }
 
     const modalCloseHandler = () =>{
@@ -216,6 +259,26 @@
         selectedCard = data.lists[listIndex]
         percentagesCounting(data.lists[listIndex])
     }
+    const deleteLabelList = (index) =>{
+        let cloneContent = newCardContent
+        cloneContent.labels =  cloneContent.labels.filter((label,i) => i !== index)
+        
+        newCardContent = cloneContent
+        console.log(newCardContent)
+    }
+    const addNewLabel = () =>{
+        if(labelInput.length > 0 && labelColor.length > 0){
+            let cloneContent = newCardContent
+            cloneContent.labels =  [...cloneContent.labels,{
+                label:labelInput,
+                color:labelColor
+            }]
+            newCardContent = cloneContent
+        }
+        else{
+            alert('please fill label and color fields!')
+        }
+    }
     const editCard = () =>{
         // perlu callback
         editListDetails(newCardContent,index,listIndex)
@@ -231,6 +294,24 @@
     const editableToogle = () =>{
         editableMode = !editableMode
     }
+    const dropEventHandler = (e,i) =>{
+        console.log('eventGetData ListIndex:',e.dataTransfer.getData('listIndex'))
+        console.log('eventGetData CardIndex:',e.dataTransfer.getData('cardIndex'))
+        console.log('index:',i)
+    }
+    const dragStartEvent = (e,cardIndex,listIndex) =>{
+        console.log('Y')
+        console.log(cardIndex)
+        console.log(listIndex)
+        e.preventDefault()
+        e.dataTransfer.setData('cardIndex',cardIndex)
+        e.dataTransfer.setData('listIndex',listIndex)
+    }
+    const dragOverEvent = (e) =>{
+        console.log(e)
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'move'
+    }
 </script>
 
 <div class="card inline">
@@ -238,10 +319,17 @@
         <span class="card-list-title">{data.title}</span>
         <button class="content-delete-button" on:click={deleteListHandler}>&times;</button>
     </div>
-    <div class="content-wrapper" style={data.lists.length > 5 && `height:${window.innerHeight*70/100}px;`}>
+    <div class="content-wrapper" style={data.lists.length > 5 && `height:${window.innerHeight*70/100}px;`} on:drop={(e)=>dropEventHandler(e,index)} on:dragover={dragOverEvent}>
     {#if data.lists.length > 0}
         {#each data.lists as list,i}
-            <CardList list={list} deleteListData={deleteListData} cardIndex={index} index={i} modalOpenHandler={modalOpenHandler} />
+            <CardList 
+            list={list} 
+            deleteListData={deleteListData} 
+            cardIndex={index} 
+            index={i} 
+            modalOpenHandler={modalOpenHandler} 
+            dragStartEvent={dragStartEvent}
+            />
         {/each}
     {:else}
         <span class="empty-card">Card is empty.</span>
@@ -263,10 +351,34 @@
 
             <div>Change Description:</div>
             <textarea style="width:100%" placeholder="Description Card" bind:value={newCardContent.description} />
+
+            <div>Labels:</div>
+            <div style="margin:10px">
+                {#each newCardContent.labels as label,i}
+                    <span class="labels" style="background-color:{label.color}">
+                    {label.label}
+                    <button class="label-delete-button" on:click={()=>deleteLabelList(i)}>&times;</button>
+                    </span>
+                {/each}
+            </div>
+            <input type="text" placeholder="Add Label" bind:value={labelInput} />
+            <select bind:value={labelColor}>
+                <option value="">-- COLOR --</option>
+                <option value="red">red</option>
+                <option value="green">green</option>
+                <option value="blue">blue</option>
+            </select>
+            <button on:click={()=>addNewLabel()}>+ Add Label</button>
             <button class="add-new-button" on:click={()=>editCard()}>Edit</button>
         {:else}
             <button class="float-right" on:click={()=>editableToogle()}>Edit Details</button>
-            <div>{selectedCard.content}</div>
+            <div>Labels:</div>
+            <div style="margin:10px">
+                {#each selectedCard.labels as label}
+                    <span class="labels" style="background-color:{label.color}">{label.label}</span>
+                {/each}
+            </div>
+            <div class="card-selected-title">{selectedCard.content}</div>
 
             {#if selectedCard.description.length > 0}
             <div>Description:</div>
@@ -274,20 +386,22 @@
             {/if}
             
             {#if selectedCard.checklist.length > 0}
-                <div>Checklist Progress:</div>
-                <progress value={$progress}></progress>
-                <div>Percentages: {(checkedData/allCheckedDataLength)*100} %</div>
-                <div>
-                    {#each selectedCard.checklist as list,i}
+                <div class="percentages-box">
+                    <div>Checklist Progress:</div>
+                    <progress value={$progress}></progress>
+                    <div>Percentages: {(checkedData/allCheckedDataLength)*100} %</div>
                     <div>
-                        <input type="checkbox" checked={list.done} on:change={(e)=>setChecklist(e,listIndex,index,i)}/> 
-                        {#if list.done} 
-                        <strike>{list.content}</strike> 
-                        {:else} 
-                        {list.content} 
-                        {/if}
+                        {#each selectedCard.checklist as list,i}
+                        <div>
+                            <input type="checkbox" checked={list.done} on:change={(e)=>setChecklist(e,listIndex,index,i)}/> 
+                            {#if list.done} 
+                            <strike>{list.content}</strike> 
+                            {:else} 
+                            {list.content} 
+                            {/if}
+                        </div>
+                        {/each}
                     </div>
-                    {/each}
                 </div>
             {/if}
             <input type="text" placeholder="Add New Checklist" on:change={inputCheckboxHandler} bind:value={inputCheckboxValue} />

@@ -4,6 +4,7 @@
     export let index
     export let cardIndex
     export let modalOpenHandler
+    export let dragStartEvent
 
     $: textConverter = () =>{
         let result
@@ -43,7 +44,7 @@
         cursor:move;
     }
     .card-list-title{
-        flex: 1
+        flex: 1;
     }
     .content-delete-button{
         cursor: pointer;
@@ -66,12 +67,31 @@
 	.card-list-body{
 		padding:.75rem;
         cursor: pointer;
-	}
+    }
+    .labels{
+        color:white;
+        padding:5px;
+        border-radius:20px;
+        margin-right:.5rem;
+        font-size:.75em;
+        transition:0.5s;
+    }
+    .labels:hover{
+        text-shadow: 0 1px 0 #fff;
+        box-shadow: 0 .25rem .75rem rgba(0,0,0,.2);
+        transition:1s;
+    }
 </style>
 
 <div class="card-list">
-    <div class="card-list-header">
-        <span class="card-list-title">No Label</span>
+    <div class="card-list-header" draggable={true} on:dragstart={(e)=>dragStartEvent(e,index,cardIndex)}>
+        <div class="card-list-title">
+            {#each list.labels as label,i}
+                {#if i < 3}
+                <span class="labels" style="background-color:{label.color}">{label.label}</span>
+                {/if}
+            {/each}
+        </div>
         <button class="content-delete-button" on:click={()=>deleteListData(cardIndex,index)}>&times;</button>
     </div>
     <div class="card-list-body" on:click={()=>modalOpenHandler(list,index)}>
