@@ -68,6 +68,20 @@
         padding: 10px;
         color:white;
     }
+	.add-new-button{
+		width:100%;
+		background-color:#23ad2a;
+		color:white;
+		cursor: pointer;
+		border:none;
+	}
+	.add-new-button:hover{
+		background-color:#17731c;
+    }
+    .float-right{
+        float: right;
+        cursor: pointer;
+    }
 </style>
 
 <script>
@@ -75,7 +89,8 @@
     import Modal from './Modal.svelte'
     import { tweened } from 'svelte/motion';
     import { cubicOut } from 'svelte/easing';
-    
+    import {afterUpdate} from 'svelte'
+
     export let data
     export let addListDatas
     export let index
@@ -84,22 +99,31 @@
     export let getListDetails
     export let setCheckedChecklist
     export let addChecklistDatas
+    export let editListDetails
 
     const progress = tweened(0, {
 		duration: 700,
 		easing: cubicOut
     });
 
+    afterUpdate(()=>{
+        if(selectedCard !== null){
+            newCardContent = selectedCard
+        }
+    })
+
     let inputValue = ''
     let inputCheckboxValue = ''
     let visible = false
     let selectedCard = null
+    let newCardContent = {
+        content:'',
+        description:''
+    }
     let listIndex = null
     let allCheckedDataLength = 0
     let checkedData = 0
-    let contentWrapperStyle = {
-        style:`height:${window.innerHeight*70/100}px`
-    }
+    let editableMode = true
 
     const inputHandler = (e) =>{
         inputValue = e.target.value
@@ -192,6 +216,21 @@
         selectedCard = data.lists[listIndex]
         percentagesCounting(data.lists[listIndex])
     }
+    const editCard = () =>{
+        // perlu callback
+        editListDetails(newCardContent,index,listIndex)
+        let newData = data
+        newData.lists[listIndex] = newCardContent
+        console.log('data',newData)
+
+        data = newData
+        selectedCard = newCardContent
+        editableMode = false
+        console.log('data',data)
+    }
+    const editableToogle = () =>{
+        editableMode = !editableMode
+    }
 </script>
 
 <div class="card inline">
@@ -202,7 +241,7 @@
     <div class="content-wrapper" style={data.lists.length > 5 && `height:${window.innerHeight*70/100}px;`}>
     {#if data.lists.length > 0}
         {#each data.lists as list,i}
-            <CardList list={list} deleteListData={deleteListData} cardIndex={index} index={i} modalOpenHandler={()=>modalOpenHandler(list,i)} />
+            <CardList list={list} deleteListData={deleteListData} cardIndex={index} index={i} modalOpenHandler={modalOpenHandler} />
         {/each}
     {:else}
         <span class="empty-card">Card is empty.</span>
@@ -217,31 +256,42 @@
         closeHandler={modalCloseHandler}
         title="Card Details"
     >
-        <div>{selectedCard.content}</div>
+        {#if editableMode}
+            <button class="float-right" on:click={()=>editableToogle()}>Back to Details</button>
+            <div>Change Title:</div>
+            <input type="text" style="width:100%" placeholder="Change Title" bind:value={newCardContent.content} />
 
-        {#if selectedCard.description.length > 0}
-        <div>Description:</div>
-        <div class="description-box">{selectedCard.description}</div>
-        {/if}
-        
-        {#if selectedCard.checklist.length > 0}
-            <div>Checklist Progress:</div>
-            <progress value={$progress}></progress>
-            <div>Percentages: {(checkedData/allCheckedDataLength)*100} %</div>
-            <div>
-                {#each selectedCard.checklist as list,i}
+            <div>Change Description:</div>
+            <textarea style="width:100%" placeholder="Description Card" bind:value={newCardContent.description} />
+            <button class="add-new-button" on:click={()=>editCard()}>Edit</button>
+        {:else}
+            <button class="float-right" on:click={()=>editableToogle()}>Edit Details</button>
+            <div>{selectedCard.content}</div>
+
+            {#if selectedCard.description.length > 0}
+            <div>Description:</div>
+            <div class="description-box">{selectedCard.description}</div>
+            {/if}
+            
+            {#if selectedCard.checklist.length > 0}
+                <div>Checklist Progress:</div>
+                <progress value={$progress}></progress>
+                <div>Percentages: {(checkedData/allCheckedDataLength)*100} %</div>
                 <div>
-                    <input type="checkbox" checked={list.done} on:change={(e)=>setChecklist(e,listIndex,index,i)}/> 
-                    {#if list.done} 
-                    <strike>{list.content}</strike> 
-                    {:else} 
-                    {list.content} 
-                    {/if}
+                    {#each selectedCard.checklist as list,i}
+                    <div>
+                        <input type="checkbox" checked={list.done} on:change={(e)=>setChecklist(e,listIndex,index,i)}/> 
+                        {#if list.done} 
+                        <strike>{list.content}</strike> 
+                        {:else} 
+                        {list.content} 
+                        {/if}
+                    </div>
+                    {/each}
                 </div>
-                {/each}
-            </div>
+            {/if}
+            <input type="text" placeholder="Add New Checklist" on:change={inputCheckboxHandler} bind:value={inputCheckboxValue} />
+            <button on:click={()=>submitListCheckboxHandler(index,listIndex)}>+ Add</button>
         {/if}
-        <input type="text" placeholder="Add New Checklist" on:change={inputCheckboxHandler} bind:value={inputCheckboxValue} />
-        <button on:click={()=>submitListCheckboxHandler(index,listIndex)}>+ Add</button>
     </Modal>
 </div>

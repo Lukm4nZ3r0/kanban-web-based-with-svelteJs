@@ -123,6 +123,14 @@
 		console.log(data)
 	}
 
+	const editListDetails = (newData,index, cardIndex) =>{
+		let newDatas = datas
+		newDatas[index].lists[cardIndex] = newData
+
+		datas = newDatas
+		console.log(datas)
+	}
+
 	const closeModalHandler = () =>{
 		listSelected = null
 		visible = false
@@ -154,6 +162,7 @@
 				getListDetails={getListDetails}
 				setCheckedChecklist={setCheckedChecklist}
 				addChecklistDatas={addChecklistDatas}
+				editListDetails={editListDetails}
 			/>
 		{/each}
 		<button class="inline add-new-card" on:click={openAddNewListModal}>

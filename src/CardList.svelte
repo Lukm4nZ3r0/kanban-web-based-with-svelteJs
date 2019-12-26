@@ -5,10 +5,10 @@
     export let cardIndex
     export let modalOpenHandler
 
-    const textConverter = () =>{
+    $: textConverter = () =>{
         let result
-        if(list.content.length > 35){
-            result = list.content.substring(0,35) + '...'
+        if(list.content.length > 30){
+            result = list.content.substring(0,30) + '...'
         }
         else{
             result = list.content
@@ -71,10 +71,10 @@
 
 <div class="card-list">
     <div class="card-list-header">
-        <span class="card-list-title">Warna</span>
+        <span class="card-list-title">No Label</span>
         <button class="content-delete-button" on:click={()=>deleteListData(cardIndex,index)}>&times;</button>
     </div>
-    <div class="card-list-body" on:click={()=>modalOpenHandler(list)}>
+    <div class="card-list-body" on:click={()=>modalOpenHandler(list,index)}>
         {textConverter()}
     </div>
 </div>
